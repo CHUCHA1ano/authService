@@ -1,0 +1,99 @@
+{
+  "realm": "jacapp",
+  "enabled": true,
+  "displayName": "jACApp",
+  "displayNameHtml": "<div class=\"kc-logo-text\"><span>jACApp</span></div>",
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "registrationEmailAsUsername": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": true,
+  "verifyEmail": false,
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 43200,
+  "accessTokenLifespanForImplicitFlow": 43200,
+  "ssoSessionIdleTimeout": 43200,
+  "ssoSessionMaxLifespan": 43200,
+  "offlineSessionIdleTimeout": 43200,
+  "refreshTokenMaxReuse": 0,
+  "revokeRefreshToken": true,
+  "passwordPolicy": "length(8) and hashAlgorithm(bcrypt) and hashIterations(12)",
+  "roles": {
+    "realm": [
+      {
+        "name": "ADMIN",
+        "description": "Administrator: full access to all services"
+      },
+      {
+        "name": "USER",
+        "description": "Regular user: access only to own resources"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "jacapp-api",
+      "name": "jACApp API (resource server)",
+      "description": "Bearer-only client used as the audience of protected services",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "bearerOnly": true,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false
+    },
+    {
+      "clientId": "jacapp-backend",
+      "name": "jACApp backend (service account)",
+      "description": "Confidential client used by UserService to call the Keycloak Admin REST API",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "jacapp-backend-secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "jacapp-frontend",
+      "name": "jACApp frontend",
+      "description": "Public client used by users to obtain access and refresh tokens",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": [
+        "*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "*"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-jacapp-backend",
+      "enabled": true,
+      "serviceAccountClientId": "jacapp-backend",
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users",
+          "query-users",
+          "view-realm"
+        ]
+      }
+    }
+  ]
+}
