@@ -9,7 +9,7 @@
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": false,
-  "editUsernameAllowed": false,
+  "editUsernameAllowed": true,
   "verifyEmail": false,
   "bruteForceProtected": true,
   "accessTokenLifespan": 43200,
