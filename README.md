@@ -11,6 +11,7 @@ other business data stay in the corresponding business services (e.g. `userServi
 authService/
 ├── Dockerfile                  # custom Keycloak image with the BCrypt provider
 ├── docker-compose.yaml         # Keycloak + its own PostgreSQL database
+├── pom.xml                     # Maven aggregator (opens the project in an IDE)
 ├── realm/
 │   └── jacapp-realm.json       # realm, roles, clients, token lifespan, password policy
 └── providers/
@@ -87,6 +88,10 @@ length(8) and hashAlgorithm(bcrypt) and hashIterations(12)
 Build the provider locally:
 
 ```bash
+# from the authService root (Maven aggregator)
+mvn clean package
+
+# or only the provider module
 cd providers/bcrypt-provider
 mvn clean package
 ```
