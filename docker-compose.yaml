@@ -3,18 +3,17 @@ services:
     image: postgres:15-alpine
     container_name: auth-service-postgres
     environment:
-      POSTGRES_DB: keycloakdb
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak
-    ports:
-      - "5433:5432"
+      POSTGRES_DB: ${KC_DB_NAME:-keycloakdb}
+      POSTGRES_USER: ${KC_DB_USERNAME:-keycloak}
+      POSTGRES_PASSWORD: ${KC_DB_PASSWORD:?KC_DB_PASSWORD_is_required}
     volumes:
       - keycloak_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloakdb"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    # No published ports: the database is reachable only on the internal network.
     networks:
       - auth-network
 
@@ -26,11 +25,15 @@ services:
         condition: service_healthy
     environment:
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloakdb
-      KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: keycloak
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/${KC_DB_NAME:-keycloakdb}
+      KC_DB_USERNAME: ${KC_DB_USERNAME:-keycloak}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:?KC_DB_PASSWORD_is_required}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME:?KC_BOOTSTRAP_ADMIN_USERNAME_is_required}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD:?KC_BOOTSTRAP_ADMIN_PASSWORD_is_required}
+      # Passed to the realm import through the ${JC_CLIENT_SECRET} placeholder.
+      JC_CLIENT_SECRET: ${JC_CLIENT_SECRET:?JC_CLIENT_SECRET_is_required}
+      # Enable ${env.*} substitution inside the imported realm JSON (off by default in Keycloak).
+      JAVA_OPTS_APPEND: "-Dkeycloak.migration.replace-placeholders=true"
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
