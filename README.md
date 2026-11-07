@@ -12,7 +12,6 @@ authService/
 ├── Dockerfile                  # custom Keycloak image with the SPI plugins
 ├── docker-compose.yaml         # Keycloak + its own PostgreSQL database (internal network only)
 ├── pom.xml                     # Maven aggregator (opens the project in an IDE)
-├── .env.example                # template of the git-ignored `.env` with all secrets
 ├── realm/
 │   └── jacapp-realm.json       # realm, roles, clients, claims, token lifespan, password policy
 └── providers/
@@ -33,15 +32,11 @@ authService/
 | Roles admin/user | Realm roles `ADMIN` and `USER` |
 | Admin API access | Service account of `jacapp-backend` with `manage-users`, `view-users`, `query-users`, `view-realm` |
 | REST integration with UserService | UserService calls the Keycloak Admin REST API using the `jacapp-backend` client |
-| No secrets in the repository | Client secret and admin credentials come from a git-ignored `.env` (Keycloak `${env.*}` placeholders) |
+| No secrets in the repository | Client secret and admin credentials come from a git-ignored `.env` (Keycloak `${VAR}` placeholder substitution in the realm import) |
 
 ## Configuration
 
-Copy the template and fill in the values:
-
-```bash
-cp .env.example .env
-```
+Create a git-ignored `.env` in `authService/` with the following variables:
 
 | Variable | Purpose |
 |---|---|

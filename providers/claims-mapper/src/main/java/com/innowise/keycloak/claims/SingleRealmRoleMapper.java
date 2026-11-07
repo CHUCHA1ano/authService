@@ -18,14 +18,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Adds a single {@code role} string claim with the user's application role
- * ({@code ADMIN} or {@code USER}) so that downstream services do not have to
- * parse the Keycloak-specific {@code realm_access.roles} structure.
- * <p>
- * The built-in realm role mapper writes the whole (multivalued) role set and,
- * when restricted to a single value, picks an arbitrary element. This mapper
- * resolves the role deterministically: the first role from {@link #CLAIMED_ROLES}
- * present on the user wins.
+ * Emits a single {@code role} string claim ({@code ADMIN} or {@code USER}) so downstream services
+ * do not have to parse the Keycloak-specific {@code realm_access.roles} structure. The value is
+ * deterministic, unlike the built-in realm role mapper: the first role from
+ * {@link #CLAIMED_ROLES} found on the user wins.
  */
 public class SingleRealmRoleMapper extends AbstractOIDCProtocolMapper
         implements OIDCAccessTokenMapper, OIDCIDTokenMapper, TokenIntrospectionTokenMapper {

@@ -13,7 +13,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    # No published ports: the database is reachable only on the internal network.
     networks:
       - auth-network
 
@@ -30,9 +29,7 @@ services:
       KC_DB_PASSWORD: ${KC_DB_PASSWORD:?KC_DB_PASSWORD_is_required}
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME:?KC_BOOTSTRAP_ADMIN_USERNAME_is_required}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD:?KC_BOOTSTRAP_ADMIN_PASSWORD_is_required}
-      # Passed to the realm import through the ${JC_CLIENT_SECRET} placeholder.
       JC_CLIENT_SECRET: ${JC_CLIENT_SECRET:?JC_CLIENT_SECRET_is_required}
-      # Enable ${env.*} substitution inside the imported realm JSON (off by default in Keycloak).
       JAVA_OPTS_APPEND: "-Dkeycloak.migration.replace-placeholders=true"
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
@@ -43,9 +40,10 @@ services:
       - "8180:8080"
       - "9000:9000"
     healthcheck:
-      test:
-        - "CMD-SHELL"
-        - "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.0\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"
+      test: >-
+        exec 3<>/dev/tcp/localhost/9000 &&
+        echo -e 'GET /health/ready HTTP/1.0\r\n\r\n' >&3 &&
+        cat <&3 | grep -q '200 OK'
       interval: 15s
       timeout: 5s
       retries: 20
